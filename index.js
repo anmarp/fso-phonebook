@@ -17,28 +17,7 @@ morgan.token('req-body', (request, response) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
 
-let persons = [
-  {
-    "id": 1,
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": 2,
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": 3,
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-  },
-  {
-    "id": 4,
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-  }
-]
+let persons = []
 
 app.get('/info', (request, response) => {
   response.send(`<p>Phonebook has info for ${persons.length} people</p>` + new Date())
@@ -71,27 +50,20 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  } else if (!body.name || !body.number) {
+  if (!body.name || !body.number) {
     return response.status(400).json({
       error: 'namer or number missing'
     })
   }
 
-  const id = Math.floor(Math.random() * Math.floor(1000000000))
-
-  const person = {
-    id: id,
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  persons = persons.concat(person)
-
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT
