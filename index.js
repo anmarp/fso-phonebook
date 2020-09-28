@@ -9,7 +9,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 
-morgan.token('req-body', (request, response) => {
+morgan.token('req-body', (request) => {
   const body = JSON.stringify(request.body)
 
   return body === '{}' ? null : body
@@ -17,13 +17,13 @@ morgan.token('req-body', (request, response) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
 
-app.get('/info', (request, response) => {
+app.get('/info', (response) => {
   Person.find({}).then(persons => {
     response.send(`<p>Phonebook has info for ${persons.length} people</p>` + new Date())
   })
 })
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (response) => {
   Person.find({}).then(persons => {
     response.json(persons)
   })
@@ -93,13 +93,13 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (response) => {
   response.status(404).send({ error: 'Unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {
