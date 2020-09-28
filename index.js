@@ -17,7 +17,7 @@ morgan.token('req-body', (request) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
 
-app.get('/info', (response) => {
+app.get('/info', (request, response) => {
   Person.find({}).then(persons => {
     response.send(`<p>Phonebook has info for ${persons.length} people</p>` + new Date())
   })
